@@ -19,7 +19,7 @@ git clone https://github.com/openpeer/easysqlite.git
 ````
 cd sqlite
 sh sqlite.sh
-cc ..
+cd ..
 ````
 
 
