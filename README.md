@@ -35,4 +35,4 @@ cp "sqlite/build/sqlite3.h" "easysqlite/sqlite/sqlite3.h"
 5) Compile projects/xcode/easysqlite.xcodeproj for Mac
 
 
-NOTE: Alternatively to step 1 and 2, the amalgamation file can be downloaded directly from http://www.sqlite.org/ and placed into the easysqlite/sqlite/ path.
+NOTE: Alternatively to step 1, 2, and 3 the amalgamation file can be downloaded directly from http://www.sqlite.org/ and placed into a path named `easysqlite/sqlite/`.
