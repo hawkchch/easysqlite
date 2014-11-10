@@ -10,8 +10,8 @@ How to compile on iOS / Mac from scratch:
 1) Clone `sqlite` and `easysqlite` into the same directory
 
 ````
-git clone https://github.com/openpeer/sqlite.git
-git clone https://github.com/openpeer/easysqlite.git
+git clone https://github.com/openpeer/sqlite.git -b 20140401-master
+git clone https://github.com/openpeer/easysqlite.git -b 20140401-master
 ````
 
 2) Build the amalgamation files
