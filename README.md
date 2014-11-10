@@ -3,18 +3,18 @@ easysqlite
 
 C++ wrapper around sqlite database from https://code.google.com/p/easysqlite/
 
-The code assume sqlite3.c sqlite3.h has been amalgamated into the ./sqlite/ path.
+The project files assume the amalgamation files `sqlite3.c` and `sqlite3.h` have been placed into the `easysqlite/sqlite/` path.
 
-How to compile on iOS / Mac:
+How to compile on iOS / Mac from scratch:
 
-1) Clone into the same directory
+1) Clone `sqlite` and `easysqlite` into the same directory
 
 ````
 git clone https://github.com/openpeer/sqlite.git
 git clone https://github.com/openpeer/easysqlite.git
 ````
 
-2) Build the amalgamation file
+2) Build the amalgamation files
 
 ````
 cd sqlite
@@ -23,7 +23,7 @@ cc ..
 ````
 
 
-3) Copy the amalgamation file into easysql
+3) Copy the amalgamation files into easysql
 
 ````
 mkdir -p "easysqlite/sqlite"
@@ -31,8 +31,8 @@ cp "sqlite/build/sqlite3.c" "easysqlite/sqlite/sqlite3.c"
 cp "sqlite/build/sqlite3.h" "easysqlite/sqlite/sqlite3.h"
 ````
 
-4) Compile projects/xcode/easysqlite_ios.xcodeproj for iOS
-5) Compile projects/xcode/easysqlite.xcodeproj for Mac
+4) Compile `projects/xcode/easysqlite_ios.xcodeproj` for iOS
+5) Compile `projects/xcode/easysqlite.xcodeproj` for Mac
 
 
-NOTE: Alternatively to step 1, 2, and 3 the amalgamation file can be downloaded directly from http://www.sqlite.org/ and placed into a path named `easysqlite/sqlite/`.
+NOTE: Alternatively to step 1, 2, and 3 the amalgamation files can be downloaded directly from http://www.sqlite.org/ and placed into a path named `easysqlite/sqlite/`.
