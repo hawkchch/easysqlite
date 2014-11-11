@@ -1,5 +1,6 @@
 #include "SqlValue.h"
 
+#include <string.h>
 
 namespace sql
 {
@@ -49,6 +50,8 @@ bool Value::equals(Value& value)
 		return (asBool() == value.asBool());
 	case type_time:
 		return (asTime() == value.asTime());
+  case type_undefined:
+    break;
 	}
 
 	return false;
@@ -106,7 +109,7 @@ integer Value::asInteger()
 	if (isNull())
 		return 0;
 
-	return _atoi64(_value.c_str());
+  return std::stoll(_value);
 }
 
 double Value::asDouble()
@@ -148,12 +151,8 @@ void Value::setString(string value)
 
 void Value::setInteger(integer value)
 {
-	char buffer[128];
-
-	_i64toa(value, buffer, 10);
-
 	_isNull = false;
-	_value = buffer;
+  _value = std::to_string(value);
 }
 
 void Value::setDouble(double value)

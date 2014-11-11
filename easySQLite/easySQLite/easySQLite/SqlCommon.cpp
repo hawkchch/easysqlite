@@ -1,6 +1,7 @@
 #include "SqlCommon.h"
 #include "SHA1.h"
 
+#include <inttypes.h>
 
 namespace sql
 {
@@ -17,7 +18,7 @@ time::time(const time& value)
 
 time::time(integer value)
 {
-	_value = value;
+	_value = static_cast<decltype(_value)>(value);
 }
 
 time& time::operator=(const time& value)
@@ -67,9 +68,15 @@ string time::format(const char* format)
 	tm localtime;
 	char buffer[128];
 
+#ifdef _WIN32
   if (localtime_s(&localtime, &_value) == 0)
-		if (strftime(buffer, 128, format, &localtime) > 0)
-			s = buffer;
+    if (strftime(buffer, 128, format, &localtime) > 0)
+      s = buffer;
+#else //_WIN32
+  if (localtime_r(&_value, &localtime) == 0)
+    if (strftime(buffer, 128, format, &localtime) > 0)
+      s = buffer;
+#endif //_WIN32
 
 	return s;
 }
@@ -112,16 +119,12 @@ void time::addDays(integer count)
 
 string intToStr(int value)
 {
-	char buffer[32];
-	_itoa_s(value, buffer, sizeof(buffer), 10);
-	return buffer;
+  return std::to_string(value);
 }
 
 string intToStr(integer value)
 {
-	char buffer[64];
-	_i64toa_s(value, buffer, sizeof(buffer), 10);
-	return buffer;
+  return std::to_string(value);
 }
 
 string quoteStr(string value)
@@ -161,7 +164,7 @@ string binToHex(const char* buffer, int size)
 
 #pragma warning(default : 4996)
 
-string generateSHA(string& value)
+string generateSHA(const string& value)
 {
 	CSHA1 sha;
 
