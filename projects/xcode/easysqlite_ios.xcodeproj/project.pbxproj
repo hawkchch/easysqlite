@@ -16,7 +16,7 @@
 		004B22F41A107B8F00239AAC /* SqlRecordSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004B224D1A1079E000239AAC /* SqlRecordSet.cpp */; };
 		004B22F61A107B8F00239AAC /* SqlTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004B224F1A1079E000239AAC /* SqlTable.cpp */; };
 		004B22F81A107B8F00239AAC /* SqlValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004B22511A1079E000239AAC /* SqlValue.cpp */; };
-		004B22FD1A107DCF00239AAC /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 004B22FB1A107DCF00239AAC /* sqlite3.c */; };
+		004B22FD1A107DCF00239AAC /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 004B22FB1A107DCF00239AAC /* sqlite3.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */

@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		004EDE7B1A110752008976F7 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE791A110752008976F7 /* sqlite3.c */; };
+		004EDE7B1A110752008976F7 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE791A110752008976F7 /* sqlite3.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		004EDEF11A1107CA008976F7 /* SHA1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE821A110796008976F7 /* SHA1.cpp */; };
-		004EDEF21A1107CA008976F7 /* SqlCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE841A110796008976F7 /* SqlCommon.cpp */; };
+		004EDEF21A1107CA008976F7 /* SqlCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE841A110796008976F7 /* SqlCommon.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		004EDEF31A1107CA008976F7 /* SqlDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE861A110796008976F7 /* SqlDatabase.cpp */; };
 		004EDEF41A1107CA008976F7 /* SqlField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE881A110796008976F7 /* SqlField.cpp */; };
 		004EDEF51A1107CA008976F7 /* SqlFieldSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE8A1A110796008976F7 /* SqlFieldSet.cpp */; };
-		004EDEF61A1107CA008976F7 /* SqlRecord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE8E1A110796008976F7 /* SqlRecord.cpp */; };
-		004EDEF71A1107CA008976F7 /* SqlRecordSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE901A110796008976F7 /* SqlRecordSet.cpp */; };
+		004EDEF61A1107CA008976F7 /* SqlRecord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE8E1A110796008976F7 /* SqlRecord.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		004EDEF71A1107CA008976F7 /* SqlRecordSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE901A110796008976F7 /* SqlRecordSet.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		004EDEF81A1107CA008976F7 /* SqlTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE921A110796008976F7 /* SqlTable.cpp */; };
 		004EDEF91A1107CA008976F7 /* SqlValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004EDE941A110796008976F7 /* SqlValue.cpp */; };
 /* End PBXBuildFile section */
