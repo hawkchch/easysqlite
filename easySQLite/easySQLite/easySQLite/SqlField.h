@@ -40,6 +40,7 @@ public:
 	field_type getType();
 	bool isPrimaryKey();
 	bool isNotNull();
+  bool isUnique();
 
 public:
 	string getDefinition();

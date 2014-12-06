@@ -87,12 +87,20 @@ bool Field::isNotNull()
 	return ((_flags & flag_not_null) == flag_not_null);
 }
 
+bool Field::isUnique()
+{
+  return ((_flags & flag_unique) == flag_unique);
+}
+
 string Field::getDefinition()
 {
 	string value = _name + " " + getTypeStr();
 
 	if (isPrimaryKey())
 		value += " PRIMARY KEY";
+
+  if (isUnique())
+    value += " UNIQUE";
 
 	if (isNotNull())
 		value += " NOT NULL";
@@ -152,6 +160,11 @@ Field* Field::createFromDefinition(string value)
 		{
 			_flags |= flag_not_null;
 		}
+
+    if (flags.find("UNIQUE") != std::string::npos)
+    {
+      _flags |= flag_unique;
+    }
 	}
 
 	Field* field = NULL;

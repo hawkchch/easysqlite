@@ -208,29 +208,32 @@ string Record::toSqlInsert(string tableName)
 
 string Record::toSqlUpdate(string tableName)
 {
-	string s = "update " + tableName + " set ";
+  string s;
+  string whereClause;
 
 	for (int index = 0; index < _fields->count(); index++)
 	{
 		if (Field* field = _fields->getByIndex(index))
 		{
-			if (field->isKeyIdField())
-				continue;
-
 			if (Value* value = getValue(field->getName()))
 			{
-				s += field->getName() + "=" + value->toSql(field->getType());
-
-				if (index < (_fields->count() - 1))
-					s += ", ";
+        if (field->isPrimaryKey()) {
+          if (whereClause.length() > 0)
+            whereClause += " AND ";
+          whereClause += field->getName() + "=" + value->toSql(field->getType());
+        } else {
+          if (s.length() > 0)
+            s += ", ";
+          s += field->getName() + "=" + value->toSql(field->getType());
+        }
 			}
 		}
 	}
 
-	if (Value* value = getKeyIdValue())
-		s += " where _ID = " + value->toSql(type_int);
+  if (whereClause.length() > 0)
+    s += " where " + whereClause;
 
-	return s;
+	return "update " + tableName + " set " + s;
 }
 
 bool Record::equalsColumnValue(Record* record, string fieldName)
