@@ -1,3 +1,5 @@
 sqlite/sqlite3.c
 sqlite/sqlite3.h
 xcuserdata
+projects/android/libs
+projects/android/obj
