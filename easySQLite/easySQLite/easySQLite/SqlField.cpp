@@ -4,6 +4,8 @@
 namespace sql
 {
 
+const char *Field::id = "_ID";
+
 Field::Field(field_use use)
 {
 	this->_name.clear();
@@ -14,7 +16,7 @@ Field::Field(field_use use)
 
 	if (use == FIELD_KEY)
 	{
-		this->_name = "_ID";
+		this->_name = id;
 		this->_type = type_int;
 		this->_flags = flag_primary_key;
 	}
@@ -38,32 +40,32 @@ Field::Field(const Field& value)
 	_flags = value._flags;
 }
 
-bool Field::isKeyIdField()
+bool Field::isKeyIdField() const
 {
 	return (_use == FIELD_KEY);
 }
 
-bool Field::isEndingField()
+bool Field::isEndingField() const
 {
 	return (_use == DEFINITION_END);
 }
 
-field_type Field::getType()
+field_type Field::getType() const
 {
 	return _type;
 }
 
-int Field::getIndex()
+int Field::getIndex() const
 {
 	return _index;
 }
 
-string Field::getName()
+string Field::getName() const
 {
 	return _name;
 }
 
-string Field::getTypeStr()
+string Field::getTypeStr() const
 {
 	switch (_type)
 	{
@@ -77,22 +79,28 @@ string Field::getTypeStr()
 	return "";
 }
 
-bool Field::isPrimaryKey()
+bool Field::isPrimaryKey() const
 {
 	return ((_flags & flag_primary_key) == flag_primary_key);
 }
 
-bool Field::isNotNull()
+bool Field::isNotNull() const
 {
 	return ((_flags & flag_not_null) == flag_not_null);
 }
 
-bool Field::isUnique()
+bool Field::isUnique() const
 {
   return ((_flags & flag_unique) == flag_unique);
 }
 
-string Field::getDefinition()
+bool Field::isIgnored() const
+{
+  return ((_flags & flag_unique) == flag_ignored);
+}
+
+
+string Field::getDefinition() const
 {
 	string value = _name + " " + getTypeStr();
 
@@ -185,6 +193,14 @@ Field* Field::createFromDefinition(string value)
 	return field;
 }
 
+void Field::setIgnored(bool ignored)
+{
+  if (ignored) {
+    _flags = _flags | flag_ignored;
+    return;
+  }
+  _flags = _flags & (~(static_cast<decltype(_flags)>(flag_ignored)));
+}
 
 //sql eof
 };

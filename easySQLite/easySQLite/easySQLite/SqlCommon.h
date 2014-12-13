@@ -44,6 +44,7 @@ enum field_flags
 	flag_not_null = 1,
 	flag_primary_key = 2,
   flag_unique = 4,
+  flag_ignored = 8,
 };
 
 

@@ -1,16 +1,27 @@
 #include "SqlTable.h"
-
+#include "SqlField.h"
 
 namespace sql
 {
 
+Table::Table(Database &db, string tableName, Field* definition)
+  : _db(&db), _handle(db.getHandle()), _tableName(tableName), _recordset(db, definition)
+{
+}
+
+Table::Table(Database &db, string tableName, FieldSet* fields)
+  : _db(NULL), _handle(db.getHandle()), _tableName(tableName), _recordset(db, fields)
+{
+  _db = &db;
+}
+
 Table::Table(sqlite3* db, string tableName, Field* definition)
-	: _db(db), _tableName(tableName), _recordset(db, definition)
+	: _db(NULL), _handle(db), _tableName(tableName), _recordset(db, definition)
 {
 }
 
 Table::Table(sqlite3* db, string tableName, FieldSet* fields)
-	: _db(db), _tableName(tableName), _recordset(db, fields)
+	: _db(NULL), _handle(db), _tableName(tableName), _recordset(db, fields)
 {
 }
 
@@ -54,7 +65,7 @@ string Table::errMsg()
 
 sqlite3* Table::getHandle()
 {
-	return _db;
+	return _handle;
 }
 
 bool Table::create()
@@ -151,7 +162,7 @@ bool Table::deleteRecords(string whereCondition)
 {	
 	const string sql = "delete from " + _tableName + (whereCondition.empty() ? "" : " where " + whereCondition);
 
-	RecordSet rs(_db, _recordset.fields());
+	RecordSet rs(_handle, _recordset.fields());
 
 	if (rs.query(sql))
 	{
@@ -170,7 +181,7 @@ int Table::totalRecordCount()
 {
 	const string queryStr = "select count(*) from " + _tableName;
 
-	RecordSet rs(_db, _recordset.fields());
+	RecordSet rs(_handle, _recordset.fields());
 
 	if (rs.query(queryStr))
 	{
@@ -187,7 +198,7 @@ bool Table::exists()
 {
 	const string queryStr = "select count(*) from sqlite_master where type = 'table' and name = '" + _tableName + "'";
 
-	RecordSet rs(_db, _recordset.fields());
+	RecordSet rs(_handle, _recordset.fields());
 
 	if (rs.query(queryStr))
 	{
@@ -212,7 +223,7 @@ Record* Table::getTopRecord()
 
 Record* Table::getRecordByKeyId(integer keyId)
 {
-	const string queryStr = "select * from " + _tableName + " where _ID = " + intToStr(keyId);
+  const string queryStr = "select * from " + _tableName + " where " + Field::id + " = " + intToStr(keyId);
 
 	if (_recordset.query(queryStr))
 	{
@@ -231,7 +242,7 @@ bool Table::addRecord(Record* record)
 	{
 		const string sql = record->toSqlInsert(name());
 
-		RecordSet rs(_db, _recordset.fields());
+		RecordSet rs(_handle, _recordset.fields());
 
 		if (rs.query(sql))
 		{
@@ -247,7 +258,7 @@ bool Table::updateRecord(Record* record)
 	{
 		const string sql = record->toSqlUpdate(name());
 
-		RecordSet rs(_db, _recordset.fields());
+		RecordSet rs(_handle, _recordset.fields());
 
 		if (rs.query(sql))
 		{

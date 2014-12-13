@@ -8,6 +8,7 @@
 
 #include "sqlite3.h"
 #include "SqlCommon.h"
+#include "SqlDatabase.h"
 #include "SqlFieldSet.h"
 #include "SqlRecordSet.h"
 
@@ -18,11 +19,15 @@ namespace sql
 class Table
 {
 private:
-	sqlite3* _db;
+  Database *_db;
+	sqlite3* _handle;
 	string _tableName;
 	RecordSet _recordset;
 
 public:
+  Table(Database &db, string tableName, Field* definition);
+  Table(Database &db, string tableName, FieldSet* fields);
+
 	Table(sqlite3* db, string tableName, Field* definition);
 	Table(sqlite3* db, string tableName, FieldSet* fields);
 

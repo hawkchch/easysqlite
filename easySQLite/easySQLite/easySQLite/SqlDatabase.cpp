@@ -6,10 +6,11 @@
 namespace sql
 {
 
-Database::Database(void)
+  Database::Database(Trace *tracer)
 {
-	_db = NULL;
+	_handle = NULL;
 	_result_open = SQLITE_ERROR;
+  _tracer = tracer;
 
 	close();
 
@@ -25,9 +26,14 @@ Database::~Database(void)
 	close();
 }
 
-sqlite3* Database::getHandle()
+sqlite3* Database::getHandle() const
 {
-	return _db;
+	return _handle;
+}
+
+Database::Trace *Database::getTracer() const
+{
+  return _tracer;
 }
 
 string Database::errMsg()
@@ -37,10 +43,11 @@ string Database::errMsg()
 
 void Database::close()
 {
-	if (_db)
+	if (_handle)
 	{
-		sqlite3_close(_db);
-		_db = NULL;
+    sqlite3_trace(_handle, NULL, NULL);
+		sqlite3_close(_handle);
+		_handle = NULL;
 		_err_msg.clear();
 		_result_open = SQLITE_ERROR;
 	}
@@ -55,13 +62,14 @@ bool Database::open(string filename)
 {
 	close();
 
-	_result_open = sqlite3_open(filename.c_str(), &_db);
+	_result_open = sqlite3_open(filename.c_str(), &_handle);
 
 	if (isOpen())
 	{
+    sqlite3_trace(_handle, trace, (void *)this);
 		return true;
 	} else {
-		_err_msg = sqlite3_errmsg(_db);
+		_err_msg = sqlite3_errmsg(_handle);
 	}
 
 	THROW_EXCEPTION("Database::open: " + errMsg())
@@ -71,7 +79,7 @@ bool Database::open(string filename)
 
 bool Database::transactionBegin()
 {
-	RecordSet rs(_db);
+	RecordSet rs(*this);
 
 	if (rs.query("BEGIN TRANSACTION"))
 		return true;
@@ -81,7 +89,7 @@ bool Database::transactionBegin()
 
 bool Database::transactionCommit()
 {
-	RecordSet rs(_db);
+	RecordSet rs(*this);
 
 	if (rs.query("COMMIT TRANSACTION"))
 		return true;
@@ -91,7 +99,7 @@ bool Database::transactionCommit()
 
 bool Database::transactionRollback()
 {
-	RecordSet rs(_db);
+	RecordSet rs(*this);
 
 	if (rs.query("ROLLBACK TRANSACTION"))
 		return true;
@@ -99,6 +107,13 @@ bool Database::transactionRollback()
 	return false;
 }
 
+void Database::trace(void *context, const char *message)
+{
+  Database *pThis = (Database *)context;
+  if (!pThis) return;
+  if (!pThis->_tracer) return;
+  pThis->_tracer->notifyDatabaseTrace(Trace::Informational, message);
+}
 
 //sql eof
 };

@@ -97,9 +97,10 @@ string FieldSet::toString()
 	{
 		if (Field* f = getByIndex(index))
 		{
+      if (f->isIgnored()) continue;
+
+      if (!s.empty()) s += ", ";
 			s += f->getName();
-			if (index < (count() - 1))
-				s += ", ";
 		}
 	}
 

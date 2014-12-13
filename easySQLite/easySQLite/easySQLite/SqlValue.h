@@ -36,6 +36,7 @@ public:
 	time asTime();
 
 public:
+  void setIgnored();
 	void setNull();
 	void setString(string value);
 	void setInteger(integer value);
@@ -44,6 +45,7 @@ public:
 	void setTime(time value);
 
 public:
+  bool isIgnored() const;
 	bool isNull();
 	void setValue(char* value, field_type type);
 

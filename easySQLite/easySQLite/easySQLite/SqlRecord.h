@@ -32,6 +32,8 @@ private:
 	void initColumnCount(int columns);
 	void initColumnValue(int column_index, char* value, field_type type);
 
+  void toSqlInsert(string *outFieldNames, string *outValues);
+
 public:
 	int columnCount();
 	Value* getValue(int column_index);
@@ -39,8 +41,6 @@ public:
 	Value* getKeyIdValue();
 	Field* fieldByName(string fieldName);
 	FieldSet* fields();
-	string toString();
-	string toSql();
 	bool equalsColumnValue(Record* record, string fieldName);
 	bool equalsValues(Record* record);
 
@@ -48,7 +48,11 @@ public:
 	string toSqlInsert(string tableName);
 	string toSqlUpdate(string tableName);
 
+  string toSql();
+  string toString();
+
 public:
+  void setIgnored(int index);
 	void setNull(int index);
 	void setString(int index, string value);
 	void setInteger(int index, integer value);
@@ -57,6 +61,7 @@ public:
 	void setTime(int index, time value);
 
 public:
+  void setIgnored(string fieldName);
 	void setNull(string fieldName);
 	void setString(string fieldName, string value);
 	void setInteger(string fieldName, integer value);

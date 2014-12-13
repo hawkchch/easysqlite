@@ -17,6 +17,8 @@ class Field
 public:
 	friend class FieldSet;
 
+  static const char *id;
+
 private:
 	string _name;
 	field_use _use;
@@ -30,21 +32,25 @@ public:
 	Field(const Field& value);
 
 public:
-	bool isKeyIdField();
-	bool isEndingField();
+	bool isKeyIdField() const;
+	bool isEndingField() const;
 
 public:
-	int getIndex();
-	string getName();
-	string getTypeStr();
-	field_type getType();
-	bool isPrimaryKey();
-	bool isNotNull();
-  bool isUnique();
+	int getIndex() const;
+	string getName() const;
+	string getTypeStr() const;
+	field_type getType() const;
+	bool isPrimaryKey() const;
+	bool isNotNull() const;
+  bool isUnique() const;
+  bool isIgnored() const;
 
 public:
-	string getDefinition();
+	string getDefinition() const;
 	static Field* createFromDefinition(string value);
+
+public:
+  void setIgnored(bool ignored = true);
 
 };
 

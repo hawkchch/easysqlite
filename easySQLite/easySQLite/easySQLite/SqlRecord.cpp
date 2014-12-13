@@ -39,6 +39,38 @@ void Record::initColumnValue(int column_index, char* value, field_type type)
 	_values[column_index].setValue(value, type);
 }
 
+void Record::toSqlInsert(string *outFieldNames, string *outValues)
+{
+  string *f = outFieldNames;
+  string *v = outValues;
+
+  if ((!f) &&
+      (!v)) return;
+
+  for (int index = 0; index < _fields->count(); index++)
+  {
+    if (Field* field = _fields->getByIndex(index))
+    {
+      if (field->isIgnored()) continue;
+
+      if (Value* value = getValue(field->getName()))
+      {
+        if (value->isIgnored()) continue;
+
+        if (f) {
+          if (!(*f).empty()) (*f) += ", ";
+          (*f) += field->getName();
+        }
+
+        if (v) {
+          if (!(*v).empty()) (*v) += ", ";
+          (*v) += value->toSql(field->getType());
+        }
+      }
+    }
+  }
+}
+
 int Record::columnCount()
 {
 	return _values.size();
@@ -78,36 +110,36 @@ string Record::toString()
 {
 	string s;
 
-	for (int column = 0; column < columnCount(); column++)
+  for (int column = 0; column < columnCount(); column++) {
+    if (Field* field = _fields->getByIndex(column))
+    {
+      if (field->isIgnored()) continue;
+    }
 		if (Value* value = getValue(column))
 		{
+      if (value->isIgnored()) continue;
+
+      if (!s.empty()) s += "|";
 			s += value->toString();
-			if (column < (columnCount() - 1))
-				s += "|";
 		}
+  }
 
 	return s;
 }
 
 string Record::toSql()
 {
-	string s;
+	string values;
 
-	for (int index = 0; index < _fields->count(); index++)
-	{
-		if (Field* field = _fields->getByIndex(index))
-		{
-			if (Value* value = getValue(field->getName()))
-			{
-				s += value->toSql(field->getType());
+  toSqlInsert(NULL, &values);
 
-				if (index < (_fields->count() - 1))
-					s += ", ";
-			}
-		}
-	}
+  return values;
+}
 
-	return s;
+void Record::setIgnored(int index)
+{
+	if (Value* v = getValue(index))
+		v->setIgnored();
 }
 
 void Record::setNull(int index)
@@ -157,6 +189,12 @@ Field* Record::fieldByName(string fieldName)
 	}
 }
 
+void Record::setIgnored(string fieldName)
+{
+	if (Field* field = fieldByName(fieldName))
+		setIgnored(field->getIndex());
+}
+
 void Record::setNull(string fieldName)
 {
 	if (Field* field = fieldByName(fieldName))
@@ -195,13 +233,17 @@ void Record::setTime(string fieldName, time value)
 
 string Record::toSqlInsert(string tableName)
 {
+  string f;
+  string v;
+  toSqlInsert(&f, &v);
+
 	string s = "insert into " + tableName + " ";
 
-	s += "(" + _fields->toString() + ")";
+	s += "(" + f + ")";
 
 	s += " values ";
 
-	s += "(" + toSql() + ")";
+	s += "(" + v + ")";
 
 	return s;
 }
@@ -215,15 +257,18 @@ string Record::toSqlUpdate(string tableName)
 	{
 		if (Field* field = _fields->getByIndex(index))
 		{
+      if (field->isIgnored()) continue;
+
 			if (Value* value = getValue(field->getName()))
 			{
+        if (value->isIgnored()) continue;
+
         if (field->isPrimaryKey()) {
           if (whereClause.length() > 0)
             whereClause += " AND ";
           whereClause += field->getName() + "=" + value->toSql(field->getType());
         } else {
-          if (s.length() > 0)
-            s += ", ";
+          if (!s.empty()) s += ", ";
           s += field->getName() + "=" + value->toSql(field->getType());
         }
 			}

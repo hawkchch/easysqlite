@@ -4,19 +4,39 @@
 namespace sql
 {
 
-RecordSet::RecordSet(sqlite3* db)
-	: _fields(NULL)
+RecordSet::RecordSet(Database &db) :
+  RecordSet(db.getHandle())
 {
-	_db = db;
-	_err_msg.clear();
-	_result_query = SQLITE_ERROR;
-	_records.clear();
+  _db = &db;
+}
+
+RecordSet::RecordSet(Database &db, Field* definition) :
+  RecordSet(db.getHandle(), definition)
+{
+  _db = &db;
+}
+
+RecordSet::RecordSet(Database &db, FieldSet* fields) :
+  RecordSet(db.getHandle(), fields)
+{
+  _db = &db;
+}
+
+RecordSet::RecordSet(sqlite3* db)
+  : _fields(NULL)
+{
+  _db = NULL;
+  _handle = db;
+  _err_msg.clear();
+  _result_query = SQLITE_ERROR;
+  _records.clear();
 }
 
 RecordSet::RecordSet(sqlite3* db, FieldSet* fields)
 	: _fields(*fields)
 {
-	_db = db;
+  _db = NULL;
+	_handle = db;
 	_err_msg.clear();
 	_result_query = SQLITE_ERROR;
 	_records.clear();
@@ -25,7 +45,8 @@ RecordSet::RecordSet(sqlite3* db, FieldSet* fields)
 RecordSet::RecordSet(sqlite3* db, Field* definition)
 	: _fields(definition)
 {
-	_db = db;
+  _db = NULL;
+	_handle = db;
 	_err_msg.clear();
 	_result_query = SQLITE_ERROR;
 	_records.clear();
@@ -81,6 +102,13 @@ int RecordSet::on_next_record(void* param, int column_count, char** values, char
 		}
   }
 
+  if (recordset->_db) {
+    Database::Trace *tracer = recordset->_db->getTracer();
+    if (tracer) {
+      tracer->notifyDatabaseTrace(Database::Trace::Informational, record.toString().c_str());
+    }
+  }
+
 	recordset->_records.push_back(record);
 
   return DATASET_ITERATION_CONTINUE;
@@ -92,7 +120,7 @@ bool RecordSet::query(string sql)
 
 	char* error = NULL;
 
-	_result_query = sqlite3_exec(_db, sql.c_str(), on_next_record, this, &error);
+	_result_query = sqlite3_exec(_handle, sql.c_str(), on_next_record, this, &error);
 
 	if (isResult())
 	{
@@ -104,6 +132,14 @@ bool RecordSet::query(string sql)
 		_err_msg = error;
 		sqlite3_free(error);
 	}
+
+  if (_db) {
+    Database::Trace *tracer = _db->getTracer();
+    if (tracer) {
+      tracer->notifyDatabaseTrace(Database::Trace::Error, errMsg().c_str());
+      tracer->notifyDatabaseTrace(Database::Trace::Warning, sql.c_str());
+    }
+  }
 
 	THROW_EXCEPTION("RecordSet::query: " + errMsg())
 

@@ -9,6 +9,7 @@
 #include <vector>
 #include "sqlite3.h"
 #include "SqlCommon.h"
+#include "SqlDatabase.h"
 #include "SqlRecord.h"
 
 
@@ -25,7 +26,8 @@ private:
 	};
 
 private:
-	sqlite3* _db;
+  Database *_db;
+	sqlite3* _handle;
 	string _err_msg;
 	int _result_query;
 	FieldSet _fields;
@@ -35,7 +37,11 @@ private:
 	static int on_next_record(void* param, int column_count, char** values, char** columns);
 
 public:
-	RecordSet(sqlite3* db);
+  RecordSet(Database &db);
+  RecordSet(Database &db, Field* definition);
+  RecordSet(Database &db, FieldSet* fields);
+
+  RecordSet(sqlite3* db);
 	RecordSet(sqlite3* db, Field* definition);
 	RecordSet(sqlite3* db, FieldSet* fields);
 	~RecordSet(void);

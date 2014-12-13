@@ -35,8 +35,7 @@ Value& Value::operator=(const Value& value)
 
 bool Value::equals(Value& value)
 {
-	if (isNull() && value.isNull())
-		return true;
+  if (isNull()) return value.isNull();
 
 	switch (_type)
 	{
@@ -51,7 +50,7 @@ bool Value::equals(Value& value)
 	case type_time:
 		return (asTime() == value.asTime());
   case type_undefined:
-    break;
+    return value.isIgnored();
 	}
 
 	return false;
@@ -134,6 +133,13 @@ time Value::asTime()
 	return dt;
 }
 
+void Value::setIgnored()
+{
+  _isNull = false;
+  _value.clear();
+  _type = type_undefined;
+}
+
 void Value::setNull()
 {
 	_isNull = true;
@@ -144,6 +150,7 @@ void Value::setString(string value)
 {
 	_isNull = false;
 	_value = value;
+  _type = type_text;
 }
 
 //CRT_SECURE_NO_WARNINGS
@@ -153,6 +160,7 @@ void Value::setInteger(integer value)
 {
 	_isNull = false;
   _value = std::to_string(value);
+  _type = type_int;
 }
 
 void Value::setDouble(double value)
@@ -163,6 +171,7 @@ void Value::setDouble(double value)
 
 	_isNull = false;
 	_value = buffer;
+  _type = type_float;
 }
 
 #pragma warning(default : 4996)
@@ -171,6 +180,7 @@ void Value::setBool(bool value)
 {
 	_isNull = false;
 	_value = (value ? "1" : "0");
+  _type = type_bool;
 }
 
 void Value::setTime(time value)
@@ -178,6 +188,12 @@ void Value::setTime(time value)
 	time t(value);
 	_isNull = false;
 	setInteger(t.asInteger());
+  _type = type_time;
+}
+
+bool Value::isIgnored() const
+{
+  return (type_undefined == _type) && (!_isNull);
 }
 
 bool Value::isNull()
