@@ -4,7 +4,7 @@
 namespace sql
 {
 
-FieldSet::FieldSet(Field* definition)
+FieldSet::FieldSet(const Field* definition)
 {
 	//make fields map from array
 	if (definition)
@@ -12,18 +12,26 @@ FieldSet::FieldSet(Field* definition)
 		int index = 0;
 		while (true)
 		{
-			Field& field = definition[index];
+			const Field& field = definition[index];
 
 			if (field.isEndingField())
 				break;
+      
+      Field tempField = field;
 
-			field._index = index;
+			tempField._index = index;
 
-			_vec.push_back(field);			
-			_map[field.getName()] = &field;
+			_vec.push_back(tempField);
 
 			index++;
 		}
+
+    //make fields map from vector
+    for (int index = 0; index < (int)_vec.size(); index++)
+    {
+      Field& field = _vec[index];
+      _map[field.getName()] = &field;
+    }
 	}
 }
 
@@ -49,44 +57,62 @@ void FieldSet::copy(const std::vector<Field>& definition)
 	}
 }
 
-int FieldSet::count()
+int FieldSet::count() const
 {
 	return (int)_vec.size();
 }
 
-Field* FieldSet::getByIndex(int index)
+const Field* FieldSet::getByIndex(int index) const
 {
-	if ((index >= 0) && (index < count()))
-		return &_vec[index];
+  FieldSet *pThis = const_cast<FieldSet *>(this);
+
+  if ((index >= 0) && (index < count()))
+    return &(pThis->_vec[index]);
 
 	return NULL;
 }
 
-Field* FieldSet::getByName(string name)
+const Field* FieldSet::getByName(string name) const
 {
-	return _map[name];
+  FieldSet *pThis = const_cast<FieldSet *>(this);
+	return pThis->_map[name];
 }
 
-string FieldSet::getDefinition()
+string FieldSet::getDefinition(bool stripIgnoredFields) const
 {
 	string s;
 
 	for (int index = 0; index < count(); index++)
 	{
-		if (Field* f = getByIndex(index))
+		if (const Field* f = getByIndex(index))
 		{
+      if ((f->isIgnored()) &&
+          (stripIgnoredFields)) continue;
+
+      if (!s.empty()) s += ", ";
 			s += f->getDefinition();
-			if (index < (count() - 1))
-				s += ", ";
 		}
 	}
 
 	return s;
 }
 
-string FieldSet::definitionHash()
+bool FieldSet::hasIgnoredFields() const
 {
-	return generateSHA(getDefinition());
+  for (int index = 0; index < count(); index++)
+  {
+    if (const Field* f = getByIndex(index))
+    {
+      if (f->isIgnored()) return true;
+    }
+  }
+  
+  return false;
+}
+
+string FieldSet::definitionHash(bool stripIgnoredFields) const
+{
+	return generateSHA(getDefinition(stripIgnoredFields));
 }
 
 string FieldSet::toString()
@@ -95,7 +121,7 @@ string FieldSet::toString()
 
 	for (int index = 0; index < count(); index++)
 	{
-		if (Field* f = getByIndex(index))
+		if (const Field* f = getByIndex(index))
 		{
       if (f->isIgnored()) continue;
 

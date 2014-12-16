@@ -24,19 +24,20 @@ private:
 	void copy(const std::vector<Field>& definition);
 
 public:
-	FieldSet(Field* definition);
+	FieldSet(const Field* definition);
 	FieldSet(std::vector<Field>& definition);
 	FieldSet(const FieldSet& source);
 
 public:
 	string toString();
-	int count();
-	Field* getByIndex(int index);
-	Field* getByName(string name);
+	int count() const;
+	const Field* getByIndex(int index) const;
+	const Field* getByName(string name) const;
 
 public:
-	string definitionHash();
-	string getDefinition();
+	string definitionHash(bool stripIgnoredFields) const;
+	string getDefinition(bool stripIgnoredFields) const;
+  bool hasIgnoredFields() const;
 	static FieldSet* createFromDefinition(string value);
 
 };

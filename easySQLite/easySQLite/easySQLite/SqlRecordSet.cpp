@@ -10,13 +10,13 @@ RecordSet::RecordSet(Database &db) :
   _db = &db;
 }
 
-RecordSet::RecordSet(Database &db, Field* definition) :
+RecordSet::RecordSet(Database &db, const Field* definition) :
   RecordSet(db.getHandle(), definition)
 {
   _db = &db;
 }
 
-RecordSet::RecordSet(Database &db, FieldSet* fields) :
+RecordSet::RecordSet(Database &db, const FieldSet* fields) :
   RecordSet(db.getHandle(), fields)
 {
   _db = &db;
@@ -32,7 +32,7 @@ RecordSet::RecordSet(sqlite3* db)
   _records.clear();
 }
 
-RecordSet::RecordSet(sqlite3* db, FieldSet* fields)
+RecordSet::RecordSet(sqlite3* db, const FieldSet* fields)
 	: _fields(*fields)
 {
   _db = NULL;
@@ -42,7 +42,7 @@ RecordSet::RecordSet(sqlite3* db, FieldSet* fields)
 	_records.clear();
 }
 
-RecordSet::RecordSet(sqlite3* db, Field* definition)
+RecordSet::RecordSet(sqlite3* db, const Field* definition)
 	: _fields(definition)
 {
   _db = NULL;
@@ -69,7 +69,7 @@ void RecordSet::close()
 	_result_query = SQLITE_ERROR;
 }
 
-FieldSet* RecordSet::fields()
+const FieldSet* RecordSet::fields() const
 {
 	return &_fields;
 }
@@ -89,17 +89,40 @@ int RecordSet::on_next_record(void* param, int column_count, char** values, char
 	RecordSet* recordset = (RecordSet*)param;
 
 	Record record(recordset->fields());
+  
+  if (column_count > recordset->fields()->count()) {
+    record.initColumnCount(column_count);
+  }
+  
+  int fieldIndex = 0;
 
-	record.initColumnCount(column_count);
-
-  for (int index = 0; index < column_count; index++)
+  for (int index = 0; index < column_count; index++, fieldIndex++)
 	{
 		char* value = values[index];
+    
+    const Field *field = recordset->_fields.getByIndex(fieldIndex);
+    while (field) {
+      if (!field->isIgnored()) break;
+      
+      ++fieldIndex;
+      field = recordset->_fields.getByIndex(fieldIndex);
+    }
+    
+    if (!field) {
+      char* column = columns[index];
+      string fieldDefinitionMismatch = "RecordSet::query field definition mismatch column=" + string(column) + ", value=" + string(value);
+      if (recordset->_db) {
+        Database::Trace *tracer = recordset->_db->getTracer();
+        if (tracer) {
+          char* column = columns[index];
+          tracer->notifyDatabaseTrace(Database::Trace::Error, fieldDefinitionMismatch.c_str());
+        }
+      }
 
-		if (Field* field = recordset->_fields.getByIndex(index))
-		{
-			record.initColumnValue(index, value, field->getType());			
-		}
+      THROW_EXCEPTION("RecordSet::query: " + fieldDefinitionMismatch)
+    }
+
+    record.initColumnValue(fieldIndex, value, field->getType());
   }
 
   if (recordset->_db) {

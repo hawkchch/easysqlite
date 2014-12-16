@@ -25,18 +25,19 @@ private:
 	RecordSet _recordset;
 
 public:
-  Table(Database &db, string tableName, Field* definition);
-  Table(Database &db, string tableName, FieldSet* fields);
+  Table(Database &db, string tableName, const Field* definition);
+  Table(Database &db, string tableName, const FieldSet* fields);
 
-	Table(sqlite3* db, string tableName, Field* definition);
-	Table(sqlite3* db, string tableName, FieldSet* fields);
+	Table(sqlite3* db, string tableName, const Field* definition);
+	Table(sqlite3* db, string tableName, const FieldSet* fields);
 
 public:
 	string name();
-	string getDefinition();
+	string getDefinition() const;
+  string getSelectFields() const;
 	string toString();
 	string errMsg();
-	FieldSet* fields();
+	const FieldSet* fields() const;
 	sqlite3* getHandle();
 
 public:

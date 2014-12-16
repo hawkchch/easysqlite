@@ -18,11 +18,11 @@ namespace sql
 class Record
 {
 private:
-	FieldSet* _fields;
+	const FieldSet* _fields;
 	std::vector<Value> _values;
 
 public:
-	Record(FieldSet* fields);
+	Record(const FieldSet* fields);
 	Record(Record* record);
 	Record(const Record& record);
 
@@ -39,8 +39,8 @@ public:
 	Value* getValue(int column_index);
 	Value* getValue(string fieldName);
 	Value* getKeyIdValue();
-	Field* fieldByName(string fieldName);
-	FieldSet* fields();
+	const Field* fieldByName(string fieldName) const;
+	const FieldSet* fields() const;
 	bool equalsColumnValue(Record* record, string fieldName);
 	bool equalsValues(Record* record);
 

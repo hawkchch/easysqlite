@@ -4,23 +4,23 @@
 namespace sql
 {
 
-Table::Table(Database &db, string tableName, Field* definition)
+Table::Table(Database &db, string tableName, const Field* definition)
   : _db(&db), _handle(db.getHandle()), _tableName(tableName), _recordset(db, definition)
 {
 }
 
-Table::Table(Database &db, string tableName, FieldSet* fields)
+Table::Table(Database &db, string tableName, const FieldSet* fields)
   : _db(NULL), _handle(db.getHandle()), _tableName(tableName), _recordset(db, fields)
 {
   _db = &db;
 }
 
-Table::Table(sqlite3* db, string tableName, Field* definition)
+Table::Table(sqlite3* db, string tableName, const Field* definition)
 	: _db(NULL), _handle(db), _tableName(tableName), _recordset(db, definition)
 {
 }
 
-Table::Table(sqlite3* db, string tableName, FieldSet* fields)
+Table::Table(sqlite3* db, string tableName, const FieldSet* fields)
 	: _db(NULL), _handle(db), _tableName(tableName), _recordset(db, fields)
 {
 }
@@ -30,12 +30,32 @@ string Table::name()
 	return _tableName;
 }
 
-string Table::getDefinition()
+string Table::getDefinition() const
 {
-	return "CREATE TABLE " + _tableName + " (" + fields()->getDefinition() + ")";
+	return "CREATE TABLE " + _tableName + " (" + fields()->getDefinition(false) + ")";
 }
 
-FieldSet* Table::fields()
+string Table::getSelectFields() const
+{
+  if (!fields()->hasIgnoredFields()) return string("*");
+
+  string s;
+  
+  for (int index = 0; index < fields()->count(); index++)
+  {
+    if (const Field* f = fields()->getByIndex(index))
+    {
+      if (f->isIgnored()) continue;
+      
+      if (!s.empty()) s += ", ";
+      s += f->getName();
+    }
+  }
+  
+  return s;
+}
+
+const FieldSet* Table::fields() const
 {
 	return _recordset.fields();
 }
@@ -46,7 +66,7 @@ string Table::toString()
 
 	for (int index = 0; index < fields()->count(); index++)
 	{
-		if (Field* f = fields()->getByIndex(index))
+		if (const Field* f = fields()->getByIndex(index))
 		{
 			s += intToStr(index + 1) + ". " + f->getDefinition();
 
@@ -94,7 +114,7 @@ bool Table::query(string queryStr)
 
 bool Table::open()
 {
-	const string queryStr = "select * from " + _tableName;
+	const string queryStr = "select " + getSelectFields() + " from " + _tableName;
 
 	if (_recordset.query(queryStr))
 	{
@@ -108,7 +128,7 @@ bool Table::open()
 //"_ID > 40"
 bool Table::open(string whereCondition)
 {
-	const string queryStr = "select * from " + _tableName + (whereCondition.empty() ? "" : " where " + whereCondition);
+	const string queryStr = "select " + getSelectFields() + " from " + _tableName + (whereCondition.empty() ? "" : " where " + whereCondition);
 
 	if (_recordset.query(queryStr))
 	{
@@ -122,7 +142,7 @@ bool Table::open(string whereCondition)
 //"_ID desc"
 bool Table::open(string whereCondition, string sortBy)
 {
-	const string queryStr = "select * from " + _tableName
+	const string queryStr = "select " + getSelectFields() + " from " + _tableName
 		+ (whereCondition.empty() ? "" : " where " + whereCondition)
 		+ (sortBy.empty() ? "" : " order by " + sortBy);
 
@@ -223,7 +243,7 @@ Record* Table::getTopRecord()
 
 Record* Table::getRecordByKeyId(integer keyId)
 {
-  const string queryStr = "select * from " + _tableName + " where " + Field::id + " = " + intToStr(keyId);
+  const string queryStr = "select " + getSelectFields() + " from " + _tableName + " where " + Field::id + " = " + intToStr(keyId);
 
 	if (_recordset.query(queryStr))
 	{

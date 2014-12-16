@@ -38,12 +38,12 @@ private:
 
 public:
   RecordSet(Database &db);
-  RecordSet(Database &db, Field* definition);
-  RecordSet(Database &db, FieldSet* fields);
+  RecordSet(Database &db, const Field* definition);
+  RecordSet(Database &db, const FieldSet* fields);
 
   RecordSet(sqlite3* db);
-	RecordSet(sqlite3* db, Field* definition);
-	RecordSet(sqlite3* db, FieldSet* fields);
+	RecordSet(sqlite3* db, const Field* definition);
+	RecordSet(sqlite3* db, const FieldSet* fields);
 	~RecordSet(void);
 
 public:
@@ -51,7 +51,7 @@ public:
 	bool isResult();
 	bool query(string sql);
 	void close();
-	FieldSet* fields();
+	const FieldSet* fields() const;
 
 public:
 	int count();

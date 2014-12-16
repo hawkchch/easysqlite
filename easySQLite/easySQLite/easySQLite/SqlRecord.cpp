@@ -4,7 +4,7 @@
 namespace sql
 {
 
-Record::Record(FieldSet* fields)
+Record::Record(const FieldSet* fields)
 	: _fields(fields)
 {
 	initColumnCount(_fields->count());
@@ -24,7 +24,7 @@ Record::Record(const Record& record)
 	_values = record._values;
 }
 
-FieldSet* Record::fields()
+const FieldSet* Record::fields() const
 {
 	return _fields;
 }
@@ -49,24 +49,35 @@ void Record::toSqlInsert(string *outFieldNames, string *outValues)
 
   for (int index = 0; index < _fields->count(); index++)
   {
-    if (Field* field = _fields->getByIndex(index))
+    if (const Field* field = _fields->getByIndex(index))
     {
       if (field->isIgnored()) continue;
+      
+      string insertValue;
 
       if (Value* value = getValue(field->getName()))
       {
         if (value->isIgnored()) continue;
-
-        if (f) {
-          if (!(*f).empty()) (*f) += ", ";
-          (*f) += field->getName();
-        }
-
+        
         if (v) {
-          if (!(*v).empty()) (*v) += ", ";
-          (*v) += value->toSql(field->getType());
+          insertValue = value->toSql(field->getType());
+        }
+      } else {
+        if (v) {
+          insertValue = "NULL";
         }
       }
+
+      if (f) {
+        if (!(*f).empty()) (*f) += ", ";
+        (*f) += field->getName();
+      }
+      
+      if (v) {
+        if (!(*v).empty()) (*v) += ", ";
+        (*v) += insertValue;
+      }
+
     }
   }
 }
@@ -86,7 +97,7 @@ Value* Record::getValue(int column_index)
 
 Value* Record::getValue(string fieldName)
 {
-	if (Field* field = _fields->getByName(fieldName))
+	if (const Field* field = _fields->getByName(fieldName))
 		return getValue(field->getIndex());
 
 	return NULL;
@@ -96,7 +107,7 @@ Value* Record::getKeyIdValue()
 {
 	for (int index = 0; index < _fields->count(); index++)
 	{
-		if (Field* field = _fields->getByIndex(index))
+		if (const Field* field = _fields->getByIndex(index))
 		{
 			if (field->isKeyIdField())
 				return getValue(field->getIndex());
@@ -111,7 +122,7 @@ string Record::toString()
 	string s;
 
   for (int column = 0; column < columnCount(); column++) {
-    if (Field* field = _fields->getByIndex(column))
+    if (const Field* field = _fields->getByIndex(column))
     {
       if (field->isIgnored()) continue;
     }
@@ -178,56 +189,54 @@ void Record::setTime(int index, time value)
 		v->setTime(value);
 }
 
-Field* Record::fieldByName(string fieldName)
+const Field* Record::fieldByName(string fieldName) const
 {
-	if (Field* field = _fields->getByName(fieldName))
-	{
+	if (const Field* field = _fields->getByName(fieldName))
 		return field;
-	} else {
-		THROW_EXCEPTION("Record::fieldByName: field '" + fieldName + "' not found")
-		return NULL;
-	}
+
+  THROW_EXCEPTION("Record::fieldByName: field '" + fieldName + "' not found")
+  return NULL;
 }
 
 void Record::setIgnored(string fieldName)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setIgnored(field->getIndex());
 }
 
 void Record::setNull(string fieldName)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setNull(field->getIndex());
 }
 
 void Record::setString(string fieldName, string value)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setString(field->getIndex(), value);
 }
 
 void Record::setInteger(string fieldName, integer value)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setInteger(field->getIndex(), value);
 }
 
 void Record::setDouble(string fieldName, double value)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setDouble(field->getIndex(), value);
 }
 
 void Record::setBool(string fieldName, bool value)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setBool(field->getIndex(), value);
 }
 
 void Record::setTime(string fieldName, time value)
 {
-	if (Field* field = fieldByName(fieldName))
+	if (const Field* field = fieldByName(fieldName))
 		setTime(field->getIndex(), value);
 }
 
@@ -255,7 +264,7 @@ string Record::toSqlUpdate(string tableName)
 
 	for (int index = 0; index < _fields->count(); index++)
 	{
-		if (Field* field = _fields->getByIndex(index))
+		if (const Field* field = _fields->getByIndex(index))
 		{
       if (field->isIgnored()) continue;
 
@@ -298,7 +307,7 @@ bool Record::equalsValues(Record* record)
 	{
 		for (int index = 0; index < _fields->count(); index++)
 		{
-			if (Field* field = _fields->getByIndex(index))
+			if (const Field* field = _fields->getByIndex(index))
 			{
 				if (field->isKeyIdField())
 					continue;
