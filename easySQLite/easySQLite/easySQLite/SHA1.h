@@ -85,6 +85,7 @@
 #endif
 #endif
 
+#include <limits.h>
 #include <memory.h>
 
 #ifdef SHA1_UTILITY_FUNCTIONS
