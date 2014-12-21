@@ -32,12 +32,13 @@ public:
 	Table(sqlite3* db, string tableName, const FieldSet* fields);
 
 public:
-	string name();
+	string name() const;
 	string getDefinition() const;
   string getSelectFields() const;
 	string toString();
 	string errMsg();
 	const FieldSet* fields() const;
+  FieldSet* fields();
 	sqlite3* getHandle();
 
 public:

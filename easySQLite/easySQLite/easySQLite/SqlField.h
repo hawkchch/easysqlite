@@ -41,6 +41,7 @@ public:
 	string getTypeStr() const;
 	field_type getType() const;
 	bool isPrimaryKey() const;
+  bool isAutoincrement() const;
 	bool isNotNull() const;
   bool isUnique() const;
   bool isIgnored() const;

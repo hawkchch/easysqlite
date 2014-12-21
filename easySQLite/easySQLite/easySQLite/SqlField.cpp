@@ -14,11 +14,15 @@ Field::Field(field_use use)
 	this->_index = -1;
 	this->_flags = flag_none;
 
-	if (use == FIELD_KEY)
+	if ((FIELD_KEY == use) ||
+      (FIELD_KEY_AUTOINCREMENT == use))
 	{
 		this->_name = id;
 		this->_type = type_int;
 		this->_flags = flag_primary_key;
+    if (FIELD_KEY_AUTOINCREMENT == use) {
+      this->_flags |= flag_autoincrement;
+    }
 	}
 }
 
@@ -84,6 +88,11 @@ bool Field::isPrimaryKey() const
 	return ((_flags & flag_primary_key) == flag_primary_key);
 }
 
+bool Field::isAutoincrement() const
+{
+  return ((_flags & flag_autoincrement) == flag_autoincrement);
+}
+
 bool Field::isNotNull() const
 {
 	return ((_flags & flag_not_null) == flag_not_null);
@@ -96,7 +105,7 @@ bool Field::isUnique() const
 
 bool Field::isIgnored() const
 {
-  return ((_flags & flag_unique) == flag_ignored);
+  return ((_flags & flag_ignored) == flag_ignored);
 }
 
 
@@ -106,6 +115,9 @@ string Field::getDefinition() const
 
 	if (isPrimaryKey())
 		value += " PRIMARY KEY";
+  
+  if (isAutoincrement())
+    value += " AUTOINCREMENT";
 
   if (isUnique())
     value += " UNIQUE";
@@ -158,10 +170,16 @@ Field* Field::createFromDefinition(string value)
 		if (count > 3)
 			flags += " " + vec[3];
 
-		if (flags.find("PRIMARY KEY") != std::string::npos)
+    if (flags.find("PRIMARY KEY") != std::string::npos)
+    {
+      _use = FIELD_KEY;
+      _flags |= flag_primary_key;
+    }
+
+		if (flags.find("AUTOINCREMENT") != std::string::npos)
 		{
-			_use = FIELD_KEY;
-			_flags = flag_primary_key;
+			_use = FIELD_KEY_AUTOINCREMENT;
+      _flags |= flag_autoincrement;
 		}
 
 		if (flags.find("NOT NULL") != std::string::npos)

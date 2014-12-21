@@ -27,13 +27,14 @@ public:
 	bool equals(Value& value);
 	string toSql(field_type type);
 	string toString();
+  bool hasData() const;
 
 public:
-	string asString();
-	integer asInteger();
-	double asDouble();
-	bool asBool();
-	time asTime();
+	string asString() const;
+	integer asInteger() const;
+	double asDouble() const;
+	bool asBool() const;
+	time asTime() const;
 
 public:
   void setIgnored();
@@ -46,7 +47,7 @@ public:
 
 public:
   bool isIgnored() const;
-	bool isNull();
+	bool isNull() const;
 	void setValue(char* value, field_type type);
 
 };

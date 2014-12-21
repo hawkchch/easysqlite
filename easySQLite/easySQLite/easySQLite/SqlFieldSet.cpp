@@ -78,6 +78,19 @@ const Field* FieldSet::getByName(string name) const
 	return pThis->_map[name];
 }
 
+Field* FieldSet::getByIndex(int index)
+{
+  if ((index >= 0) && (index < count()))
+    return &(_vec[index]);
+  
+  return NULL;
+}
+
+Field* FieldSet::getByName(string name)
+{
+  return _map[name];
+}
+
 string FieldSet::getDefinition(bool stripIgnoredFields) const
 {
 	string s;

@@ -91,8 +91,15 @@ string Value::toString()
 
 	return asString();
 }
+  
+bool Value::hasData() const
+{
+  if (isNull()) return false;
 
-string Value::asString()
+  return _value.length() > 0;
+}
+
+string Value::asString() const
 {
 	if (_type == type_time)
 	{
@@ -103,7 +110,7 @@ string Value::asString()
 	return _value;
 }
 
-integer Value::asInteger()
+integer Value::asInteger() const
 {
 	if (isNull())
 		return 0;
@@ -111,7 +118,7 @@ integer Value::asInteger()
   return std::stoll(_value);
 }
 
-double Value::asDouble()
+double Value::asDouble() const
 {
 	if (isNull())
 		return 0.0;
@@ -119,7 +126,7 @@ double Value::asDouble()
 	return atof(_value.c_str());
 }
 
-bool Value::asBool()
+bool Value::asBool() const
 {
 	if (isNull())
 		return false;
@@ -127,7 +134,7 @@ bool Value::asBool()
 	return (_value.compare("1") == 0);
 }
 
-time Value::asTime()
+time Value::asTime() const
 {
 	time dt(asInteger());
 	return dt;
@@ -196,7 +203,7 @@ bool Value::isIgnored() const
   return (type_undefined == _type) && (!_isNull);
 }
 
-bool Value::isNull()
+bool Value::isNull() const
 {
 	return _isNull;
 }

@@ -74,6 +74,11 @@ const FieldSet* RecordSet::fields() const
 	return &_fields;
 }
 
+FieldSet* RecordSet::fields()
+{
+  return &_fields;
+}
+
 bool RecordSet::isResult()
 {
 	return (_result_query == SQLITE_OK);

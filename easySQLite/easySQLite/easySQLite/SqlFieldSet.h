@@ -33,6 +33,8 @@ public:
 	int count() const;
 	const Field* getByIndex(int index) const;
 	const Field* getByName(string name) const;
+  Field* getByIndex(int index);
+  Field* getByName(string name);
 
 public:
 	string definitionHash(bool stripIgnoredFields) const;

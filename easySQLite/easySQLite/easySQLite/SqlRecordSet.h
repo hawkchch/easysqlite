@@ -52,6 +52,7 @@ public:
 	bool query(string sql);
 	void close();
 	const FieldSet* fields() const;
+  FieldSet* fields();
 
 public:
 	int count();

@@ -87,6 +87,22 @@ int Record::columnCount()
 	return _values.size();
 }
 
+const Value* Record::getValue(int column_index) const
+{
+	if ((column_index >= 0) && (column_index < (int)_values.size()))
+		return &_values.at(column_index);
+
+	return NULL;
+}
+
+const Value* Record::getValue(string fieldName) const
+{
+	if (const Field* field = _fields->getByName(fieldName))
+		return getValue(field->getIndex());
+
+	return NULL;
+}
+
 Value* Record::getValue(int column_index)
 {
 	if ((column_index >= 0) && (column_index < (int)_values.size()))

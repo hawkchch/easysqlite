@@ -23,6 +23,7 @@ enum field_use
 {
 	FIELD_DEFAULT,
 	FIELD_KEY,
+  FIELD_KEY_AUTOINCREMENT,
 	DEFINITION_END,
 };
 
@@ -43,8 +44,9 @@ enum field_flags
 	flag_none = 0,
 	flag_not_null = 1,
 	flag_primary_key = 2,
-  flag_unique = 4,
-  flag_ignored = 8,
+  flag_autoincrement = 4,
+  flag_unique = 8,
+  flag_ignored = 16,
 };
 
 

@@ -36,8 +36,10 @@ private:
 
 public:
 	int columnCount();
-	Value* getValue(int column_index);
-	Value* getValue(string fieldName);
+	const Value* getValue(int column_index) const;
+	const Value* getValue(string fieldName) const;
+  Value* getValue(int column_index);
+  Value* getValue(string fieldName);
 	Value* getKeyIdValue();
 	const Field* fieldByName(string fieldName) const;
 	const FieldSet* fields() const;

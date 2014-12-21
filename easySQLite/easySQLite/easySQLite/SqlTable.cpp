@@ -25,7 +25,7 @@ Table::Table(sqlite3* db, string tableName, const FieldSet* fields)
 {
 }
 
-string Table::name()
+string Table::name() const
 {
 	return _tableName;
 }
@@ -58,6 +58,11 @@ string Table::getSelectFields() const
 const FieldSet* Table::fields() const
 {
 	return _recordset.fields();
+}
+
+FieldSet* Table::fields()
+{
+  return _recordset.fields();
 }
 
 string Table::toString()
