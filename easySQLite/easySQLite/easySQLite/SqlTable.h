@@ -34,7 +34,7 @@ public:
 public:
 	string name() const;
 	string getDefinition() const;
-  string getSelectFields() const;
+  string getSelectFields(bool includeTableNameContext = false) const;
 	string toString();
 	string errMsg();
 	const FieldSet* fields() const;

@@ -128,9 +128,10 @@ string FieldSet::definitionHash(bool stripIgnoredFields) const
 	return generateSHA(getDefinition(stripIgnoredFields));
 }
 
-string FieldSet::toString()
+string FieldSet::toString(const char *contextTableName) const
 {
 	string s;
+  string context(contextTableName ? string(contextTableName) : string());
 
 	for (int index = 0; index < count(); index++)
 	{
@@ -139,6 +140,9 @@ string FieldSet::toString()
       if (f->isIgnored()) continue;
 
       if (!s.empty()) s += ", ";
+      if (!context.empty()) {
+        s += context + ".";
+      }
 			s += f->getName();
 		}
 	}

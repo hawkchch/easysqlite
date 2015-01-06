@@ -35,24 +35,11 @@ string Table::getDefinition() const
 	return "CREATE TABLE " + _tableName + " (" + fields()->getDefinition(false) + ")";
 }
 
-string Table::getSelectFields() const
+string Table::getSelectFields(bool includeTableNameContext) const
 {
   if (!fields()->hasIgnoredFields()) return string("*");
 
-  string s;
-  
-  for (int index = 0; index < fields()->count(); index++)
-  {
-    if (const Field* f = fields()->getByIndex(index))
-    {
-      if (f->isIgnored()) continue;
-      
-      if (!s.empty()) s += ", ";
-      s += f->getName();
-    }
-  }
-  
-  return s;
+  return fields()->toString(includeTableNameContext ? _tableName.c_str() : string().c_str());
 }
 
 const FieldSet* Table::fields() const

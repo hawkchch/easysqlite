@@ -29,7 +29,7 @@ public:
 	FieldSet(const FieldSet& source);
 
 public:
-	string toString();
+	string toString(const char *contextTableName = NULL) const;
 	int count() const;
 	const Field* getByIndex(int index) const;
 	const Field* getByName(string name) const;
