@@ -37,7 +37,9 @@ string Table::getDefinition() const
 
 string Table::getSelectFields(bool includeTableNameContext) const
 {
-  if (!fields()->hasIgnoredFields()) return string("*");
+  if (!includeTableNameContext) {
+    if (!fields()->hasIgnoredFields()) return string("*");
+  }
 
   return fields()->toString(includeTableNameContext ? _tableName.c_str() : string().c_str());
 }
