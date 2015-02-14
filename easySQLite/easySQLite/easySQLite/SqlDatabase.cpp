@@ -6,7 +6,7 @@
 namespace sql
 {
 
-  Database::Database(Trace *tracer)
+Database::Database(Trace *tracer)
 {
 	_handle = NULL;
 	_result_open = SQLITE_ERROR;
