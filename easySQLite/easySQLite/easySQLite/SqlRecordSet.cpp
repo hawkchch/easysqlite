@@ -119,7 +119,6 @@ int RecordSet::on_next_record(void* param, int column_count, char** values, char
       if (recordset->_db) {
         Database::Trace *tracer = recordset->_db->getTracer();
         if (tracer) {
-          char* column = columns[index];
           tracer->notifyDatabaseTrace(Database::Trace::Error, fieldDefinitionMismatch.c_str());
         }
       }
