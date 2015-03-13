@@ -3,3 +3,5 @@ sqlite/sqlite3.h
 xcuserdata
 projects/android/libs
 projects/android/obj
+/sqlite
+/sqlite-amalgamation-*
